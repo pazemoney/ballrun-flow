@@ -12,7 +12,7 @@ export const TIKTOK_LABEL = '@flowgroupbr';
 /** WhatsApp oficial da Flow (créditos). */
 export const WHATSAPP_URL = 'https://wa.me/5527992785043';
 /** Endereço do jogo online (Vercel, repositório pazemoney/ballrun-flow). */
-export const GAME_URL = 'https://ballrun-flow.vercel.app';
+export const GAME_URL = 'https://ballrun-web-flow.vercel.app';
 /**
  * Instaladores publicados pelo próprio site (pasta downloads/ do repositório, gravada pelo CI na main).
  * No site usa caminho relativo (funciona em qualquer domínio); nos apps, o endereço completo.
