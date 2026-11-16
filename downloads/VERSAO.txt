@@ -1,0 +1,4 @@
+versao=4.0.0
+commit=91d2a161226074c7140c3e29c142e7c7c961d7e6
+apk_bytes=15455677
+ipa_bytes=12959815
