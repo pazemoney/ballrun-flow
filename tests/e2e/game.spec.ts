@@ -366,3 +366,30 @@ test('onde jogar e créditos: site, APK, IPA e redes oficiais da Flow', async ({
   await expect(page.getByTestId('link-tiktok')).toContainText('@flowgroupbr');
   expect(errors).toEqual([]);
 });
+
+test('menu: JOGAR com altura real, X fecha as janelas e o tutorial aparece no navegador', async ({ page }) => {
+  const errors: string[] = [];
+  // navegador comum (não robô): o tutorial "adicionar à tela inicial" deve aparecer
+  await page.addInitScript(() => Object.defineProperty(navigator, 'webdriver', { get: () => false }));
+  await open(page, errors);
+  await expect(page.getByTestId('tip-continue')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('.overlay')).toContainText('JOGUE COMO APP');
+  // regressão: o JOGAR tinha 2 px de altura no iPhone
+  expect(await page.getByTestId('play').evaluate((e) => e.getBoundingClientRect().height)).toBeGreaterThan(40);
+  await page.locator('.overlay > .x').click();
+  await expect(page.locator('.overlay')).toHaveClass(/hidden/);
+  // X também fecha a lista de conquistas (sem precisar descer até o fim)
+  await page.locator('.menu [data-act=achievements]').click();
+  await expect(page.locator('.overlay > .x')).toBeVisible();
+  await page.locator('.overlay > .x').click();
+  await expect(page.locator('.overlay')).toHaveClass(/hidden/);
+  expect(errors).toEqual([]);
+});
+
+test('menu: APK e IPA aparecem na tela inicial do site (sem precisar achar o rodapé)', async ({ page }) => {
+  const errors: string[] = [];
+  await open(page, errors);
+  await expect(page.getByTestId('menu-apk')).toHaveAttribute('href', /downloads\/BallRun-Flow\.apk$/);
+  await expect(page.getByTestId('menu-ipa')).toHaveAttribute('href', /downloads\/BallRun-Flow\.ipa$/);
+  expect(errors).toEqual([]);
+});

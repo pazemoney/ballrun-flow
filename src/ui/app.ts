@@ -101,7 +101,7 @@ export class App {
     this.loop = new FixedLoop(() => this.sim?.step());
     this.input.onPower = () => this.usePower();
     this.loadingEl = el('div', 'loading', `
-      <img src="${logoUrl}" alt="Flow" width="180" height="180">
+      <img src="./icon-512.png" alt="Ball Run" width="180" height="180">
       <h1>BALL RUN</h1>
       <div class="bar"><i></i></div>
       <p data-msg>Carregando</p>
@@ -188,6 +188,7 @@ export class App {
     });
     await bindNative({ back: () => this.back(), background: () => this.onBackground(), foreground: () => this.onForeground() });
     this.sm.go('menu');
+    this.maybeInstallTip();
     // eslint-disable-next-line no-console
     console.info(`[ballrun] menu pronto (${platformName()}, ${location.protocol}//${location.host})`);
     this.loadingEl.classList.add('out');
@@ -687,6 +688,7 @@ export class App {
     ensureDaily(d, todayKey());
     const unlockedCount = d.achievements.length;
     const dl = `<button data-act="downloads" data-testid="downloads">Onde jogar</button>`;
+    const dlRow = isNative() ? '' : `<div class="dl-row"><a class="btn" href="downloads/BallRun-Flow.apk" download="BallRun-Flow.apk" data-testid="menu-apk">Baixar APK (Android)</a><a class="btn" href="downloads/BallRun-Flow.ipa" download="BallRun-Flow.ipa" data-testid="menu-ipa">Baixar IPA (iPhone)</a></div>`;
     const ballName = d.skin === CUSTOM_SKIN_ID && this.photo ? 'Minha foto' : (findBall(d.skin)?.name ?? 'Xadrez Flow');
     this.menuEl.innerHTML = `
       <div class="menu-inner">
@@ -730,6 +732,7 @@ export class App {
           <button data-act="insta" data-testid="link-insta">${ICON.insta}<span>${INSTAGRAM_LABEL}</span></button>
           <button data-act="tiktok" data-testid="link-tiktok">${ICON.tiktok}<span>${TIKTOK_LABEL}</span></button>
         </div>
+        ${dlRow}
         <div class="footer">
           <span>Produzido pela Flow</span>
           <button data-act="credits">Créditos</button>
@@ -741,11 +744,36 @@ export class App {
 
   // ------------------------------------------------------------------ modais
   private openModal(html: string, onBack: () => void): void {
-    this.overlayEl.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`;
+    this.overlayEl.innerHTML = `<button class="x" data-act="xclose" aria-label="Fechar" data-testid="modal-x">✕</button><div class="sheet" role="dialog" aria-modal="true">${html}</div>`;
     this.overlayEl.classList.remove('hidden');
     this.modalBack = onBack;
     const sheet = this.overlayEl.querySelector('.sheet') as HTMLElement | null;
     sheet?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+  }
+
+  /** Site no navegador (não na tela inicial, não no app): ensina a adicionar o jogo à tela inicial. */
+  private maybeInstallTip(): void {
+    if (isNative() || navigator.webdriver) return;
+    const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    if (standalone) return;
+    window.setTimeout(() => {
+      if (this.sm.state === 'menu' && this.overlayEl.classList.contains('hidden')) this.installTip();
+    }, 900);
+  }
+
+  private installTip(os?: 'ios' | 'android'): void {
+    const guess = os ?? (/Android/i.test(navigator.userAgent) ? 'android' : 'ios');
+    const seg = (k: 'ios' | 'android', t: string) => `<button data-act="tip" data-os="${k}" aria-pressed="${guess === k}">${t}</button>`;
+    const steps = guess === 'ios'
+      ? ['Toque em <b>Compartilhar</b> (quadradinho com seta para cima) na barra do Safari.', 'Role a lista e toque em <b>Adicionar à Tela de Início</b>.', 'Toque em <b>Adicionar</b>. O ícone do Ball Run aparece na sua tela.']
+      : ['Toque nos <b>três pontinhos</b> (⋮) no canto do Chrome.', 'Toque em <b>Adicionar à tela inicial</b> (ou <b>Instalar app</b>).', 'Confirme. O ícone do Ball Run aparece na sua tela.'];
+    this.openModal(`
+      <h2>JOGUE COMO APP</h2>
+      <p>Adicione o Ball Run à tela inicial: ele abre em tela cheia, como um app.</p>
+      <div class="seg tabs">${seg('ios', 'iPhone')}${seg('android', 'Android')}</div>
+      <ol class="steps">${steps.map((x) => `<li>${x}</li>`).join('')}</ol>
+      <p class="small">${guess === 'ios' ? 'No iPhone, use o Safari.' : 'No Android, use o Chrome.'}</p>
+      <button class="btn" data-act="close" data-testid="tip-continue">CONTINUAR</button>`, () => this.closeModal());
   }
 
   private closeModal(): void {
@@ -1184,7 +1212,7 @@ export class App {
         <div class="wcard"><b>${ICON.ball} Android, sem internet ${here('android')}</b><span>Baixe o APK e abra. Se o Android perguntar, permita instalar "apps desconhecidos" para o navegador.</span>
           <a class="btn" href="${esc(abs(DOWNLOADS.android.file))}" download="BallRun-Flow.apk" data-testid="dl-apk" target="_blank" rel="noopener">${esc(DOWNLOADS.android.label)}</a></div>
         <div class="wcard"><b>${ICON.ball} iPhone, sem internet ${here('ios')}</b><span>O IPA é de teste, sem assinatura da Apple: o iPhone só instala por um app de instalação lateral (AltStore, Sideloadly ou similar), que assina com o seu ID Apple. Sem isso, jogue pelo site: no Safari, Compartilhar › Adicionar à Tela de Início, e ele abre como app, até sem internet depois da 1ª vez.</span>
-          <a class="btn ghost" href="${esc(abs(DOWNLOADS.ios.file))}" download="BallRun-Flow.ipa" data-testid="dl-ipa" target="_blank" rel="noopener">${esc(DOWNLOADS.ios.label)}</a></div>
+          <a class="btn" href="${esc(abs(DOWNLOADS.ios.file))}" download="BallRun-Flow.ipa" data-testid="dl-ipa" target="_blank" rel="noopener">${esc(DOWNLOADS.ios.label)}</a></div>
       </div>
       <button class="btn ghost" data-act="close">Fechar</button>`, () => this.closeModal());
   }
@@ -1318,7 +1346,11 @@ export class App {
       case 'whats':
         void openExternal(WHATSAPP_URL);
         break;
+      case 'tip':
+        this.installTip(t.dataset.os === 'android' ? 'android' : 'ios');
+        break;
       case 'close':
+      case 'xclose':
         this.closeModal();
         if (this.sm.state === 'menu') this.renderMenu();
         break;

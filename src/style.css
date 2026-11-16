@@ -323,3 +323,13 @@ svg.lock { width: 0.95em; height: 0.95em; vertical-align: -0.1em; }
 .footer > * { line-height: 1.2; }
 .footer button { padding: 6px 2px; font-size: inherit; }
 .tile { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+
+/* ---- correções do menu e das janelas ---- */
+/* o JOGAR tinha 2 px de altura: a coluna do menu encolhia os itens quando não cabiam na tela */
+.menu-inner > * { flex-shrink: 0; }
+.dl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dl-row a { text-decoration: none; display: grid; place-items: center; font-size: 13px; }
+/* X fixo no canto da janela: sempre visível, sem precisar descer a lista */
+.overlay > .x { position: absolute; top: calc(var(--safe-t) + 18px); right: calc(var(--safe-r) + 18px); width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgba(12,12,16,0.94); color: #fff; font-size: 18px; line-height: 1; display: grid; place-items: center; z-index: 3; }
+.overlay > .x:active { transform: scale(0.92); }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 1.45; color: #d9d9e0; }
