@@ -313,3 +313,13 @@ svg.lock { width: 0.95em; height: 0.95em; vertical-align: -0.1em; }
   .menu.enter .menu-inner > *, .menu.enter .title h1, .title h1, .play, .play::after, .card.diff .face, .diff-name, .overlay:not(.hidden) , .overlay:not(.hidden) .sheet { animation: none !important; }
 }
 .skins > * { min-width: 0; } .skin .ab { max-width: 100%; }
+/* links da Flow: site em cima, Instagram e TikTok lado a lado, todos no mesmo padrão (ícone + endereço) */
+.links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.links button { justify-content: center; min-width: 0; }
+.links button:first-child { grid-column: 1 / -1; }
+.links span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* rodapé: textos e botões na mesma linha de base */
+.footer { align-items: center; }
+.footer > * { line-height: 1.2; }
+.footer button { padding: 6px 2px; font-size: inherit; }
+.tile { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }

@@ -363,6 +363,6 @@ test('onde jogar e créditos: site, APK, IPA e redes oficiais da Flow', async ({
   await expect(page.getByTestId('social-tiktok')).toContainText('@flowgroupbr');
   await expect(page.getByTestId('social-insta')).toContainText('@flowgroup.br');
   await expect(page.getByTestId('social-whats')).toBeVisible();
-  await expect(page.getByTestId('link-tiktok')).toBeAttached();
+  await expect(page.getByTestId('link-tiktok')).toContainText('@flowgroupbr');
   expect(errors).toEqual([]);
 });

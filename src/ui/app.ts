@@ -728,7 +728,7 @@ export class App {
         <div class="links">
           <button data-act="site" data-testid="link-site">${ICON.globe}<span>${SITE_LABEL}</span></button>
           <button data-act="insta" data-testid="link-insta">${ICON.insta}<span>${INSTAGRAM_LABEL}</span></button>
-          <button data-act="tiktok" data-testid="link-tiktok">${ICON.tiktok}<span>TikTok</span></button>
+          <button data-act="tiktok" data-testid="link-tiktok">${ICON.tiktok}<span>${TIKTOK_LABEL}</span></button>
         </div>
         <div class="footer">
           <span>Produzido pela Flow</span>
