@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:A;src:url(anton.woff2)}
+html,body{margin:0;width:512px;height:512px;overflow:hidden;background:#07060c}
+.c{position:relative;width:512px;height:512px;background:url(fundo.png) center/cover}
+.c:before{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.6) 34%,rgba(0,0,0,0) 58%),radial-gradient(circle at 70% 76%,rgba(255,63,216,.18),transparent 45%)}
+.t{position:absolute;left:38px;top:34px}
+h1{font-family:A;font-weight:400;font-size:132px;line-height:.86;margin:0;color:#fff;letter-spacing:1px;text-shadow:0 4px 22px rgba(255,63,216,.5)}
+h1 span{display:block}
+.bar{width:118px;height:10px;background:#ff3fd8;margin-top:14px;border-radius:2px;box-shadow:0 0 18px rgba(255,63,216,.85)}
+.android .c{background-image:url(fundo-android.png)}
+.android .t{left:104px;top:96px}
+.android h1{font-size:98px}
+.android .bar{width:88px;height:8px;margin-top:11px}
+</style><script>if(location.hash==='#android')document.documentElement.classList.add('android')</script></head><body><div class="c"><div class="t"><h1><span>BALL</span><span>RUN</span></h1><div class="bar"></div></div></div></body></html>

@@ -355,7 +355,8 @@ test('onde jogar e créditos: site, APK, IPA e redes oficiais da Flow', async ({
   await page.getByTestId('downloads').click();
   await expect(page.getByTestId('dl-apk')).toHaveAttribute('href', /downloads\/BallRun-Flow\.apk$/);
   await expect(page.getByTestId('dl-ipa')).toHaveAttribute('href', /downloads\/BallRun-Flow\.ipa$/);
-  await expect(page.getByTestId('open-game')).toBeVisible();
+  // no site não há botão para abrir o próprio site (só nos apps)
+  await expect(page.getByTestId('open-game')).toHaveCount(0);
   await page.locator('.overlay [data-act=close]').click();
   await page.locator('.menu [data-act=credits]').click();
   await expect(page.locator('.overlay')).toContainText('empresa de software');
@@ -391,5 +392,18 @@ test('menu: APK e IPA aparecem na tela inicial do site (sem precisar achar o rod
   await open(page, errors);
   await expect(page.getByTestId('menu-apk')).toHaveAttribute('href', /downloads\/BallRun-Flow\.apk$/);
   await expect(page.getByTestId('menu-ipa')).toHaveAttribute('href', /downloads\/BallRun-Flow\.ipa$/);
+  expect(errors).toEqual([]);
+});
+
+test('X da pausa continua a partida (não deixa o jogo parado sem botão)', async ({ page }) => {
+  const errors: string[] = [];
+  await open(page, errors);
+  await page.getByTestId('play').click();
+  await expect.poll(async () => (await dbg(page)).state).toBe('playing');
+  await page.locator('[data-act=pause]').click();
+  await expect.poll(async () => (await dbg(page)).state).toBe('paused');
+  await page.locator('.overlay > .x').click();
+  await expect.poll(async () => (await dbg(page)).state).toBe('playing');
+  await expect(page.locator('.overlay')).toHaveClass(/hidden/);
   expect(errors).toEqual([]);
 });

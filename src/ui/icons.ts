@@ -9,6 +9,7 @@ export const ICON = {
   insta: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>',
   tiktok: '<svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/></svg>',
   whats: '<svg viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c.3 2.3 2.2 4.2 4.5 4.5l1-1.2 1.8.8c-.2 1-1 1.7-2 1.7A6.3 6.3 0 0 1 8 9c0-1 .7-1.8 1.7-2l.8 1.8z"/></svg>',
+  phone: '<svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
   coin: '<svg class="coin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#f2f2f4" stroke="#0b0b0f" stroke-width="1.5"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="#0b0b0f" stroke-width="1.4"/><path d="M10.3 9.6l-1.8 2.4 1.8 2.4M13.7 9.6l1.8 2.4-1.8 2.4" fill="none" stroke="#0b0b0f" stroke-width="1.3" stroke-linecap="round"/></svg>',
   lock: '<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>',

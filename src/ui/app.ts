@@ -102,7 +102,6 @@ export class App {
     this.input.onPower = () => this.usePower();
     this.loadingEl = el('div', 'loading', `
       <img src="./icon-512.png" alt="Ball Run" width="180" height="180">
-      <h1>BALL RUN</h1>
       <div class="bar"><i></i></div>
       <p data-msg>Carregando</p>
       <small class="madeby">Produzido pela Flow</small>`);
@@ -879,10 +878,11 @@ export class App {
       <h2>COMO JOGAR</h2>
       <div class="steps">
         <div class="step"><div class="ico">↔</div><p><b>Deslize</b> o dedo para os lados (no computador: mouse ou ← → / A D). A bola segue o movimento, sem precisar tocar nela.</p></div>
-        <div class="step"><div class="ico">■</div><p><b>Desvie</b> dos blocos escuros de borda branca. Alguns olham para você. Não leve para o lado pessoal.</p></div>
+        <div class="step"><div class="ico">■</div><p><b>Desvie</b> dos blocos coloridos (a cor muda a cada km). Alguns olham para você. Não leve para o lado pessoal.</p></div>
         <div class="step"><div class="ico">⟳</div><p><b>Giradores, vai-e-vem e blocos que brotam do chão</b> sempre deixam uma passagem. Sempre.</p></div>
-        <div class="step"><div class="ico">»</div><p><b>Faixas de setas</b> aceleram ("Acelerar") e lançam a bola sobre os vãos.</p></div>
-        <div class="step"><div class="ico">★</div><p><b>Pontos:</b> 1 a cada 5 m. A velocidade sobe devagar e nunca para de subir. Até onde você vai?</p></div>
+        <div class="step"><div class="ico">»</div><p><b>Faixas de setas</b> aceleram ("Acelerar") e lançam a bola sobre os vãos. A cada <b>1 km</b> tem um acelerador que sobe o nível: a bola fica um pouco mais rápida.</p></div>
+        <div class="step"><div class="ico">✦</div><p><b>Toque 2 vezes</b> na tela (no computador: Espaço) para usar o <b>poder da sua bola</b>: pulo, arrancada, disco voador… Cada bola tem o seu. Depois ele recarrega (botão redondo no canto).</p></div>
+        <div class="step"><div class="ico">★</div><p><b>Pontos:</b> 1 a cada 5 m. <b>Moedas:</b> 1 a cada 500 m e 1 por acelerador; use na Loja. Até onde você vai?</p></div>
       </div>
       <button class="btn" data-act="practice">TREINO GUIADO</button>
       <p class="small">O treino guiado usa o modo FÁCIL com dicas e não vale recorde.</p>
@@ -1208,10 +1208,10 @@ export class App {
       <p>É o mesmo jogo nos três: mesma pista, bolas, poderes e conquistas.</p>
       <div class="where">
         <div class="wcard"><b>${ICON.globe} Online, em qualquer aparelho ${here('web')}</b><span>Abre no navegador do celular ou do computador. Nada para instalar.</span>
-          <button class="btn" data-act="open-game" data-testid="open-game">JOGAR NO SITE</button></div>
-        <div class="wcard"><b>${ICON.ball} Android, sem internet ${here('android')}</b><span>Baixe o APK e abra. Se o Android perguntar, permita instalar "apps desconhecidos" para o navegador.</span>
+          ${plat === 'web' ? '' : '<button class="btn" data-act="open-game" data-testid="open-game">JOGAR NO SITE</button>'}</div>
+        <div class="wcard"><b>${ICON.phone} Android, sem internet ${here('android')}</b><span>Baixe o APK e abra. Se o Android perguntar, permita instalar "apps desconhecidos" para o navegador.</span>
           <a class="btn" href="${esc(abs(DOWNLOADS.android.file))}" download="BallRun-Flow.apk" data-testid="dl-apk" target="_blank" rel="noopener">${esc(DOWNLOADS.android.label)}</a></div>
-        <div class="wcard"><b>${ICON.ball} iPhone, sem internet ${here('ios')}</b><span>O IPA é de teste, sem assinatura da Apple: o iPhone só instala por um app de instalação lateral (AltStore, Sideloadly ou similar), que assina com o seu ID Apple. Sem isso, jogue pelo site: no Safari, Compartilhar › Adicionar à Tela de Início, e ele abre como app, até sem internet depois da 1ª vez.</span>
+        <div class="wcard"><b>${ICON.phone} iPhone, sem internet ${here('ios')}</b><span>O IPA é de teste, sem assinatura da Apple: o iPhone só instala por um app de instalação lateral (AltStore, Sideloadly ou similar), que assina com o seu ID Apple. Sem isso, jogue pelo site: no Safari, Compartilhar › Adicionar à Tela de Início, e ele abre como app, até sem internet depois da 1ª vez.</span>
           <a class="btn" href="${esc(abs(DOWNLOADS.ios.file))}" download="BallRun-Flow.ipa" data-testid="dl-ipa" target="_blank" rel="noopener">${esc(DOWNLOADS.ios.label)}</a></div>
       </div>
       <button class="btn ghost" data-act="close">Fechar</button>`, () => this.closeModal());
@@ -1349,8 +1349,15 @@ export class App {
       case 'tip':
         this.installTip(t.dataset.os === 'android' ? 'android' : 'ios');
         break;
-      case 'close':
       case 'xclose':
+        if (this.modalBack) {
+          this.modalBack();
+          if (this.sm.state === 'menu' && this.overlayEl.classList.contains('hidden')) this.renderMenu();
+          break;
+        }
+        this.closeModal();
+        break;
+      case 'close':
         this.closeModal();
         if (this.sm.state === 'menu') this.renderMenu();
         break;
