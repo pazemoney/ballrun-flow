@@ -1,0 +1,129 @@
+# Ball Run (Flow Group): Web + Android (APK) + iOS (IPA) a partir da MESMA base.
+# Na main, com tudo verde, o job "publicar" grava o APK e o IPA em downloads/ (o site serve os dois).
+name: Ball Run
+on:
+  push:
+    paths-ignore: ['downloads/**', '**.md']
+  workflow_dispatch:
+concurrency:
+  group: ball-run-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: package-lock.json }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Testes unitários (física, geração, justiça com robô, tutorial, recordes)
+        run: npm test
+        env: { GEN_SEEDS: '500', BOT_SEEDS: '3', BOT_DIST: '2000' }
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Testes no navegador (desktop, Pixel 7, iPhone 12 Chromium e WebKit/Safari)
+        run: npx playwright test
+        env: { WEBKIT: '1', CI: '1' }
+      - name: ZIP para a Vercel + build limpo a partir do ZIP
+        run: |
+          ./scripts/make-web-zip.sh deliverables
+          rm -rf /tmp/zipcheck && mkdir /tmp/zipcheck && cd /tmp/zipcheck
+          unzip -q "$GITHUB_WORKSPACE/deliverables/BALL_RUN_WEB_VERCEL.zip"
+          npm ci && npm run build && ls -la dist && test -f dist/index.html
+      - uses: actions/upload-artifact@v4
+        with: { name: BALL_RUN_WEB_VERCEL, path: deliverables/BALL_RUN_WEB_VERCEL.zip }
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: web-test-results, path: test-results }
+
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: package-lock.json }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - run: npm ci && npm run build && npx cap sync android
+      - name: 'APK debug (assinado com chave de teste, instalável)'
+        working-directory: android
+        run: |
+          ./gradlew assembleDebug --no-daemon -q
+          cp app/build/outputs/apk/debug/app-debug.apk ../BALL_RUN_ANDROID_debug.apk
+          unzip -l ../BALL_RUN_ANDROID_debug.apk | grep -E "assets/public/index.html|classes.dex"
+          ls -la ../BALL_RUN_ANDROID_debug.apk
+      - name: KVM para o emulador
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Emulador Android 14 — instala, modo avião, abre e joga
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: ./scripts/android-smoke.sh BALL_RUN_ANDROID_debug.apk android-proof
+      - uses: actions/upload-artifact@v4
+        with: { name: BALL_RUN_ANDROID_debug, path: BALL_RUN_ANDROID_debug.apk }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: android-proof, path: android-proof }
+
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: package-lock.json }
+      - run: npm ci && npm run build && npx cap sync ios
+      - name: IPA sem assinatura (iphoneos, Release)
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -sdk iphoneos \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build -quiet
+          APP=$(ls -d build/Build/Products/Release-iphoneos/*.app | head -1)
+          rm -rf Payload && mkdir Payload && cp -R "$APP" Payload/
+          zip -q -0 -y -r BALL_RUN_IOS_unsigned.ipa Payload
+          unzip -l BALL_RUN_IOS_unsigned.ipa | grep -E "Payload/App.app/(App|Info.plist|public/index.html)$"
+          ls -la BALL_RUN_IOS_unsigned.ipa
+      - name: Simulador iOS — instala e abre
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath simbuild CODE_SIGNING_ALLOWED=NO build -quiet
+          ./scripts/ios-sim-smoke.sh "$(ls -d simbuild/Build/Products/Debug-iphonesimulator/*.app | head -1)" ios-proof
+      - uses: actions/upload-artifact@v4
+        with: { name: BALL_RUN_IOS_unsigned, path: BALL_RUN_IOS_unsigned.ipa }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: ios-proof, path: ios-proof }
+
+  publicar:
+    if: github.ref == 'refs/heads/main'
+    needs: [web, android, ios]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: art }
+      - name: Grava APK e IPA em downloads/ (o site publica os dois)
+        run: |
+          mkdir -p downloads
+          cp art/BALL_RUN_ANDROID_debug/BALL_RUN_ANDROID_debug.apk downloads/BallRun-Flow.apk
+          cp art/BALL_RUN_IOS_unsigned/BALL_RUN_IOS_unsigned.ipa downloads/BallRun-Flow.ipa
+          V=$(grep -oE "APP_VERSION = '[^']+'" src/config.ts | cut -d"'" -f2)
+          printf 'versao=%s\ncommit=%s\napk_bytes=%s\nipa_bytes=%s\n' "$V" "$GITHUB_SHA" "$(stat -c%s downloads/BallRun-Flow.apk)" "$(stat -c%s downloads/BallRun-Flow.ipa)" > downloads/VERSAO.txt
+          unzip -l downloads/BallRun-Flow.apk | grep -q "assets/public/index.html"
+          unzip -l downloads/BallRun-Flow.ipa | grep -q "Payload/App.app/public/index.html"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads
+          git commit -m "downloads: APK e IPA da versão $V" || exit 0
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && break; sleep 5; done

@@ -1,0 +1,21 @@
+/** Constantes físicas compartilhadas por Web, Android e iOS (mesma simulação). */
+export const FIXED_DT = 1 / 120; // passo fixo da física (s)
+export const MAX_FRAME_DT = 0.1; // quadro mais longo aceito (evita "salto" ao voltar do segundo plano)
+export const BALL_R = 0.45; // raio da bola (u)
+export const GRAVITY = 30; // u/s²
+export const LAT_MAX_SPEED = 13; // velocidade lateral máxima (u/s)
+export const LAT_ACCEL = 95; // aceleração lateral máxima (u/s²)
+export const LAT_GAIN = 16; // ganho do seguimento do dedo (1/s)
+export const LAT_AIR_FACTOR = 0.75; // controle lateral no ar
+export const FWD_ACCEL = 7; // aceleração de avanço normal (u/s²)
+export const BOOST_ACCEL = 60; // aceleração na faixa ciano (u/s²)
+export const BOOST_FACTOR = 1.3; // impulso extra rápido ao passar no acelerador (depois volta à velocidade do novo nível)
+export const BOOST_TIME = 1.1; // s de impulso depois de sair da faixa
+export const SNAP_UP = 0.3; // degrau máximo que a bola sobe sem bater
+export const SNAP_DOWN = 0.5; // queda máxima que ainda "acompanha" a rampa
+export const EDGE_TOL = 0.05; // tolerância do centro da bola sobre a borda
+export const HIT_SHRINK = 0.06; // colisor do bloco é 6 cm menor que o visual de cada lado (justiça)
+export const FALL_DEATH = 7; // abaixo do chão de referência: fim de partida
+export const FLOOR_THICK = 0.5; // espessura visual das placas da pista
+export const SCORE_UNIT = 5; // 1 ponto a cada 5 u percorridos
+export const FWD_DECEL = 18; // desaceleração ao sair do impulso (u/s²)

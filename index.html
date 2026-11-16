@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#07060c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="Ball Run — Flow Group. Conduza a bola pela cidade, desvie dos blocos, use o poder especial da sua bola e chegue o mais longe possível. Jogue grátis no navegador, no Android ou no iPhone." />
+    <meta property="og:title" content="Ball Run — Flow Group" />
+    <meta property="og:description" content="Jogue direto no navegador, no celular ou no computador." />
+    <meta property="og:image" content="https://ballrun-flow.vercel.app/capa.jpg" />
+    <meta property="og:image:width" content="1080" />
+    <meta property="og:image:height" content="1414" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ballrun-flow.vercel.app/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="./icon-192.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <title>Ball Run — Flow Group</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game" aria-label="Pista do jogo"></canvas>
+      <div id="touch" aria-hidden="true"></div>
+      <div id="ui"></div>
+    </div>
+    <noscript>Ative o JavaScript para jogar Ball Run.</noscript>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

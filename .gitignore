@@ -1,0 +1,31 @@
+node_modules/
+dist/
+deliverables/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+# nativos: builds e cópias geradas pelo cap sync
+android/.gradle/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+android/local.properties
+android/app/src/main/assets/public/
+ios/App/build/
+ios/App/App/public/
+ios/DerivedData/
+Payload/
+simbuild/
+android-proof/
+ios-proof/
+*.apk
+*.ipa
+!downloads/*.apk
+!downloads/*.ipa
+# segredos nunca entram
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+.env*
