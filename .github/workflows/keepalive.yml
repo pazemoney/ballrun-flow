@@ -11,5 +11,5 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/cache/restore@v4
-        with: { path: ~/.android/debug.keystore, key: ballrun-apk-keystore-v1 }
-      - run: ls -la ~/.android/debug.keystore || echo "chave ainda não salva (o próximo build da main salva)"
+        with: { path: ~/ballrun-chave, key: ballrun-apk-keystore-v2 }
+      - run: ls -la ~/ballrun-chave/ballrun.jks || echo "chave ainda não salva (o próximo build da main salva)"

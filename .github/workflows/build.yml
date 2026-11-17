@@ -52,9 +52,19 @@ jobs:
         with: { distribution: temurin, java-version: '21' }
       # Mesma chave de assinatura em todo build (senão o Android recusa a atualização: "aplicativo não instalado").
       # A chave fica no cache privado do Actions, nunca no repositório; keepalive.yml impede que expire.
-      - name: Chave de assinatura fixa do APK
+      - name: Chave de assinatura fixa do APK (cache)
         uses: actions/cache@v4
-        with: { path: ~/.android/debug.keystore, key: ballrun-apk-keystore-v1 }
+        with: { path: ~/ballrun-chave, key: ballrun-apk-keystore-v2 }
+      - name: Cria a chave se ainda não existir
+        run: |
+          mkdir -p ~/ballrun-chave
+          if [ ! -f ~/ballrun-chave/ballrun.jks ]; then
+            keytool -genkeypair -keystore ~/ballrun-chave/ballrun.jks -storepass android -keypass android \
+              -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 20000 -dname "CN=Ball Run, O=Flow Group, C=BR"
+            echo "chave nova criada"
+          else echo "chave reaproveitada do cache"; fi
+          keytool -list -v -keystore ~/ballrun-chave/ballrun.jks -storepass android | grep -m1 SHA256
+          echo "BALLRUN_KEYSTORE=$HOME/ballrun-chave/ballrun.jks" >> "$GITHUB_ENV"
       - run: npm ci && npm run build && npx cap sync android
       - name: 'APK debug (assinado com chave de teste, instalável)'
         working-directory: android
