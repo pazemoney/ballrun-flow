@@ -13,6 +13,8 @@ interface Template {
 }
 
 const MAX_TRIES = 10;
+/** segundos máximos de pista sem nenhum bloco (o acelerador e o respiro depois dele contam à parte) */
+const EMPTY_MAX_S = 3;
 
 export interface GenOptions {
   /** só para testes: começa a pista como se já tivesse percorrido essa distância */
@@ -36,6 +38,8 @@ export class Generator {
   private nextId = 1;
   private recent: string[] = [];
   private chainLeft = 0;
+  /** fim do último obstáculo: nunca mais de ~4 s de pista sem nenhum bloco (fora o acelerador) */
+  private lastObsS = 0;
   private hinted = new Set<HintKind>();
   private prevSeg: Segment | null = null;
   rejected = 0;
@@ -118,17 +122,28 @@ export class Generator {
   next(): Segment[] {
     if (this.sEnd >= this.zoneEnd) this.nextZone(this.sEnd);
     if (this.sEnd === 0) return this.commit([this.plain(this.progress(0), 46)], 'start');
-    if (this.sEnd >= this.nextCheckpoint - 60) return this.commit(this.checkpoint(), 'checkpoint');
+    if (this.sEnd >= this.nextCheckpoint - 25) return this.commit(this.checkpoint(), 'checkpoint');
     const p = this.progress(this.sEnd);
-    if (this.chainLeft <= 0) {
+    // passou tempo demais sem bloco: sem respiro e o próximo trecho tem que ter obstáculo
+    const nearCheckpoint = this.nextCheckpoint - this.sEnd < 140; // logo antes do acelerador também vem bloco
+    const overdue = this.sEnd - this.lastObsS > (nearCheckpoint ? 12 : Math.max(40, p.speed * EMPTY_MAX_S));
+    if (this.chainLeft <= 0 && !overdue) {
       this.chainLeft = p.chain;
       const len = Math.max(6, 16 - Math.min(5, p.tier) * 2) + this.rng.range(0, 6);
       return this.commit([this.plain(p, len)], 'breath');
     }
-    for (let i = 0; i < MAX_TRIES; i++) {
+    const tries = overdue ? MAX_TRIES * 3 : MAX_TRIES;
+    for (let i = 0; i < tries; i++) {
       const t = this.pickTemplate(p);
       const saved = this.snapshot();
       const group = t.build(this, p);
+      // no máximo 3 trechos iguais seguidos (variedade), mesmo quando a pista "deve" bloco
+      const last3 = this.recent.slice(-3);
+      const repeats = last3.length === 3 && last3.every((k) => k === t.kind);
+      if (repeats || (overdue && i < tries - 2 && !group.some((g) => g.obstacles.length > 0))) {
+        this.restore(saved);
+        continue;
+      }
       const out = this.tryCommit(group, t.kind);
       if (out) {
         this.chainLeft--;
@@ -195,9 +210,9 @@ export class Generator {
     pad.floors.push(this.full(p1, pad.s0, pad.s1));
     pad.pads.push({ ...this.full(p1, pad.s0 + 1, pad.s1 - 1) });
     pad.tunnel = true;
-    const calm = this.seg('plain', 34);
+    const calm = this.seg('plain', 22);
     calm.floors.push(this.full(p1, calm.s0, calm.s1));
-    this.chainLeft = 0;
+    this.chainLeft = Math.max(1, p1.chain); // a reta calma já é o respiro: sem outra reta logo depois
     return [approach, pad, calm];
   }
 
@@ -302,6 +317,8 @@ export class Generator {
         this.hinted.add('edge');
       }
     }
+    for (const g of group) for (const o of g.obstacles) this.lastObsS = Math.max(this.lastObsS, o.s1);
+    if (kind === 'checkpoint') this.lastObsS = -1e9; // depois do acelerador (e da reta calma) vem logo um trecho com blocos
     const last = group[group.length - 1];
     if (last) {
       this.sEnd = last.s1;

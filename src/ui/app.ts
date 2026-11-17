@@ -1209,7 +1209,7 @@ export class App {
       <div class="where">
         <div class="wcard"><b>${ICON.globe} Online, em qualquer aparelho ${here('web')}</b><span>Abre no navegador do celular ou do computador. Nada para instalar.</span>
           ${plat === 'web' ? '' : '<button class="btn" data-act="open-game" data-testid="open-game">JOGAR NO SITE</button>'}</div>
-        <div class="wcard"><b>${ICON.phone} Android, sem internet ${here('android')}</b><span>Baixe o APK e abra. Se o Android perguntar, permita instalar "apps desconhecidos" para o navegador.</span>
+        <div class="wcard"><b>${ICON.phone} Android, sem internet ${here('android')}</b><span>Baixe o APK e abra. Se o Android perguntar, permita instalar "apps desconhecidos" para o navegador. Apareceu "aplicativo não instalado"? Desinstale o Ball Run antigo e instale de novo.</span>
           <a class="btn" href="${esc(abs(DOWNLOADS.android.file))}" download="BallRun-Flow.apk" data-testid="dl-apk" target="_blank" rel="noopener">${esc(DOWNLOADS.android.label)}</a></div>
         <div class="wcard"><b>${ICON.phone} iPhone, sem internet ${here('ios')}</b><span>O IPA é de teste, sem assinatura da Apple: o iPhone só instala por um app de instalação lateral (AltStore, Sideloadly ou similar), que assina com o seu ID Apple. Sem isso, jogue pelo site: no Safari, Compartilhar › Adicionar à Tela de Início, e ele abre como app, até sem internet depois da 1ª vez.</span>
           <a class="btn" href="${esc(abs(DOWNLOADS.ios.file))}" download="BallRun-Flow.ipa" data-testid="dl-ipa" target="_blank" rel="noopener">${esc(DOWNLOADS.ios.label)}</a></div>

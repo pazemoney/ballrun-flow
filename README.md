@@ -9,7 +9,7 @@ Jogo 3D de bola rolando pela cidade: desvie dos blocos (alguns têm cara de pouc
 | Onde | Como | Internet? |
 |---|---|---|
 | **Online, qualquer aparelho** | abra **https://ballrun-web-flow.vercel.app** no navegador | só para abrir (depois funciona offline) |
-| **Android** | baixe [`downloads/BallRun-Flow.apk`](downloads/BallRun-Flow.apk) e instale (permita "apps desconhecidos") | não |
+| **Android** | baixe [`downloads/BallRun-Flow.apk`](downloads/BallRun-Flow.apk) e instale (permita "apps desconhecidos"; se aparecer "aplicativo não instalado", desinstale o Ball Run antigo e instale de novo) | não |
 | **iPhone** | baixe [`downloads/BallRun-Flow.ipa`](downloads/BallRun-Flow.ipa): é de teste, **sem assinatura da Apple**; instale com AltStore, Sideloadly ou similar (assina com o seu ID Apple) | não |
 
 No iPhone sem instalador: abra o site no Safari › Compartilhar › **Adicionar à Tela de Início**.
