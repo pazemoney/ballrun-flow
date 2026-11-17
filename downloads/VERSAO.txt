@@ -1,4 +1,5 @@
 versao=4.0.0
-commit=64beeda45d48ba2689015b5c56b0a9d72b377f29
-apk_bytes=8548829
-ipa_bytes=9166372
+commit=aafc162447763df806f99e61e24bd5f8f0db7e6b
+apk_bytes=8549049
+ipa_bytes=9166872
+assinatura=a05b3ac903eacbfe7af06ce383652df212d48feebf23c8b21d3276b60ab29e46
