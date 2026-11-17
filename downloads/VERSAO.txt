@@ -1,5 +1,5 @@
 versao=4.0.0
-commit=aafc162447763df806f99e61e24bd5f8f0db7e6b
+commit=c9d015de47b01b17b4cc2001d7c97627837826e3
 apk_bytes=8549049
 ipa_bytes=9166872
-assinatura=a05b3ac903eacbfe7af06ce383652df212d48feebf23c8b21d3276b60ab29e46
+assinatura=aec757ec15b6c07c3602fc77b6f0c6b394d7f06b12df7eaf60416e3c0a7a977b
